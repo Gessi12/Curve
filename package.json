@@ -9,6 +9,7 @@
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
     "@uniswap/lib": "^4.0.1-alpha",
     "@uniswap/v2-core": "^1.0.1",
-    "@web3-react/injected-connector": "^6.0.7"
+    "@web3-react/injected-connector": "^6.0.7",
+    "dotenv": "^16.4.5"
   }
 }

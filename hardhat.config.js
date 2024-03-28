@@ -1,12 +1,13 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   defaultNetwork:"sepolia",
   networks: {
     sepolia: {
-      url: "https://eth-sepolia.g.alchemy.com/v2/F4LqDG9oAkkkQasmyfb5ZoqH_kc0y5hw",
-      accounts: ["xxxxx"]
+      url: process.env.API_URL,
+      accounts: [process.env.API_KEY]
     }
   },
 
