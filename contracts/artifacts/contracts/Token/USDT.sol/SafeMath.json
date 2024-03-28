@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "SafeMath",
+  "sourceName": "contracts/Token/USDT.sol",
+  "abi": [],
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a72305820ce7176a63f901dcbdfeaa71f3f5e571ff43af9d8a5c73ad05faa92d54b0d01480029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a72305820ce7176a63f901dcbdfeaa71f3f5e571ff43af9d8a5c73ad05faa92d54b0d01480029",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
