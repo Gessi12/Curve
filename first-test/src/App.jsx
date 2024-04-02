@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import './App.css'; // 导入 CSS 文件
+import stakingContractABI from "./ABI/StakingContract.json"
 
 const ConnectWalletButton = () => {
   const [connected, setConnected] = useState(false);
@@ -41,18 +42,7 @@ const ConnectWalletButton = () => {
     }
   };
 
-  const buttonStyle = {
-    backgroundColor: '#4CAF50',
-    border: 'none',
-    color: 'white',
-    padding: '10px 20px',
-    textDecoration: 'none',
-    cursor: 'pointer'
-  };
-
-  const infoStyle = {
-    marginTop: '10px'
-  };
+  
 
   return (
     <div>
@@ -70,6 +60,109 @@ const ConnectWalletButton = () => {
   );
 };
 
+const StakingContract = () => {
+  const [web3, setWeb3] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [amount, setAmount] = useState('');
+  const [balance, setBalance] = useState('');
+  const [stakeInfo, setStakeInfo] = useState(null);
+
+  // 初始化 Web3 和合约
+  useEffect(() => {
+    const initWeb3 = async () => {
+      if (window.ethereum) {
+        const web3Instance = new Web3(window.ethereum);
+        await window.ethereum.enable();
+        setWeb3(web3Instance);
+      }
+    };
+
+    const initContract = async () => {
+      if (web3) {
+        const contractAddress = '0xee8fb2e91bc02b28673d147eae5d9db04ccf3295';
 
 
-export default ConnectWalletButton;
+        const contractInstance = new web3.eth.Contract(stakingContractABI, contractAddress);
+        setContract(contractInstance);
+      }
+    };
+
+    initWeb3();
+    initContract();
+  }, []);
+
+  // 获取当前账户
+  useEffect(() => {
+    const getAccount = async () => {
+      if (web3) {
+        const accounts = await web3.eth.getAccounts();
+        setAccount(accounts[0]);
+      }
+    };
+
+    getAccount();
+  }, [web3]);
+
+  // 获取合约余额
+  useEffect(() => {
+    const getBalance = async () => {
+      if (contract && account) {
+        const balance = await contract.methods.balanceOf(account).call();
+        setBalance(fromWei(balance));
+      }
+    };
+
+    getBalance();
+  }, [contract, account]);
+
+  // 获取质押信息
+  const getStakeInfo = async () => {
+    if (contract && account) {
+      const stake = await contract.methods.stakes(account).call();
+      setStakeInfo(stake);
+    }
+  };
+
+  // 质押函数
+  const stake = async () => {
+    if (contract && account && amount) {
+      const weiAmount = web3.utils.toWei(amount);
+      await contract.methods.stake().send({ from: account, value: weiAmount });
+      setAmount('');
+      getStakeInfo();
+    }
+  };
+
+  // 取回质押函数
+  const unstake = async () => {
+    if (contract && account) {
+      await contract.methods.unstake().send({ from: account });
+      getStakeInfo();
+    }
+  };
+
+  return (
+    <div>
+      <h2>Staking Contract</h2>
+      <p>Account: {account}</p>
+      <p>Balance: {balance} ETH</p>
+      <p>Staked Amount: {stakeInfo?.amount || 0}</p>
+      <p>Staked Timestamp: {stakeInfo?.timestamp || 0}</p>
+      <input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <button onClick={stake}>Stake</button>
+      <button onClick={unstake}>Unstake</button>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <div className="App">
+      <ConnectWalletButton />
+      <StakingContract />
+    </div>
+  );
+};
+
+export default App;
