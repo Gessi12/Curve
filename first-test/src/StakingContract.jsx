@@ -21,7 +21,6 @@ const App = () => {
     if (window.ethereum) {
       try {
         const web3Instance = new Web3(window.ethereum);
-        await window.ethereum.enable();
         setWeb3(web3Instance);
         loadContract(web3Instance);
         loadAccount();
@@ -122,9 +121,9 @@ const App = () => {
     try {
       const transaction = contract.methods.claimReward().send({ from: account });
       const receipt = await transaction;
-      console.log('Claim reward transaction receipt:',receipt);
+      console.log('Claim reward transaction receipt:', receipt);
+      setPendingReward('');
       loadAccountBalance();
-      calculateReward();
     } catch (error) {
       console.error('Failed to claim reward:', error);
     }
@@ -133,35 +132,45 @@ const App = () => {
   return (
     <div>
       <h1>Staking App</h1>
-      <p>Account: {account}</p>
-      <p>Account Balance: {accountBalance} ETH</p>
-      <p>Total Staked: {totalStakedETH} ETH</p>
-      <p>Pending Reward: {pendingReward} ETH</p>
-      <button onClick={connectWallet}>Connect Wallet</button>
+      {account ? (
+        <div>
+          <p>Connected Account: {account}</p>
+          <p>Account Balance: {accountBalance} ETH</p>
+        </div>
+      ) : (
+        <button onClick={connectWallet}>Connect Wallet</button>
+      )}
+      <p>Total Staked ETH: {totalStakedETH}</p>
       <div>
         <h2>Stake</h2>
         <input
-          type="text"
-          placeholder="Amount to stake"
+          type="number"
+          placeholder="Stake Amount"
           value={stakeAmount}
           onChange={(e) => setStakeAmount(e.target.value)}
         />
         <button onClick={handleStake}>Stake</button>
       </div>
+
+      <div>
+        <h2>Calculate Reward</h2>
+        <button onClick={calculateReward}>Calculate Reward</button>
+        {pendingReward !== '' && <p>Pending Reward: {pendingReward}</p>}
+      </div>
+
+      <div>
+        <h2>Claim Reward</h2>
+        <button onClick={claimReward}>Claim Reward</button>
+      </div>
       <div>
         <h2>Unstake</h2>
         <input
-          type="text"
-          placeholder="Amount to unstake"
+          type="number"
+          placeholder="Unstake Amount"
           value={unstakeAmount}
           onChange={(e) => setUnstakeAmount(e.target.value)}
         />
         <button onClick={handleUnstake}>Unstake</button>
-      </div>
-      <div>
-        <h2>Reward</h2>
-        <button onClick={calculateReward}>Calculate Reward</button>
-        <button onClick={claimReward}>Claim Reward</button>
       </div>
     </div>
   );

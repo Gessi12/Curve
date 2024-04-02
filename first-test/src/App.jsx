@@ -42,7 +42,6 @@ const ConnectWalletButton = () => {
     }
   };
 
-  
 
   return (
     <div>
