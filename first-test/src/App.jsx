@@ -1,95 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import './App.css'; // 导入自定义的 CSS 文件
+import './App.css'; // 导入 CSS 文件
 
-function App() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [accounts, setAccounts] = useState([]);
-  const [selectedAccount, setSelectedAccount] = useState('');
+const ConnectWalletButton = () => {
+  const [connected, setConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState('');
   const [balance, setBalance] = useState('');
 
-  useEffect(() => {
-    checkMetaMaskConnection();
-  }, []);
-
-  const checkMetaMaskConnection = async () => {
-    if (typeof window.ethereum !== 'undefined') {
+  const connectWallet = async () => {
+    if (window.ethereum) {
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          setIsConnected(true);
-          setAccounts(accounts);
-          setSelectedAccount(accounts[0]);
-          subscribeToAccountChanges();
-          getAccountBalance(accounts[0]);
-        }
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setConnected(true);
       } catch (error) {
-        console.error(error);
+        console.error('用户拒绝授权');
       }
     } else {
-      console.log('MetaMask not found');
+      console.error('请安装 MetaMask 插件');
     }
   };
 
-  const connectToMetaMask = async () => {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      setIsConnected(true);
-      setAccounts(accounts);
-      setSelectedAccount(accounts[0]);
-      subscribeToAccountChanges();
-      getAccountBalance(accounts[0]);
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    if (connected) {
+      fetchWalletData();
+    }
+  }, [connected]);
+
+  const fetchWalletData = async () => {
+    if (window.ethereum) {
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length > 0) {
+        const address = accounts[0];
+        setWalletAddress(address);
+
+        const balance = await web3.eth.getBalance(address);
+        const etherBalance = web3.utils.fromWei(balance, 'ether');
+        setBalance(etherBalance);
+      }
     }
   };
 
-  const subscribeToAccountChanges = () => {
-    window.ethereum.on('accountsChanged', (newAccounts) => {
-      setAccounts(newAccounts);
-      setSelectedAccount(newAccounts[0]);
-      getAccountBalance(newAccounts[0]);
-    });
+  const buttonStyle = {
+    backgroundColor: '#4CAF50',
+    border: 'none',
+    color: 'white',
+    padding: '10px 20px',
+    textDecoration: 'none',
+    cursor: 'pointer'
   };
 
-  const getAccountBalance = async (account) => {
-    const web3 = new Web3(window.ethereum);
-    const balance = await web3.eth.getBalance(account);
-    setBalance(web3.utils.fromWei(balance, 'ether'));
-  };
-
-  const handleAccountChange = (event) => {
-    setSelectedAccount(event.target.value);
-    getAccountBalance(event.target.value);
+  const infoStyle = {
+    marginTop: '10px'
   };
 
   return (
-    <div className="container">
-      <h1 className="title">MetaMask Connection Example</h1>
-      {isConnected ? (
-        <div>
-          <p className="info">Connected with MetaMask!</p>
-          <p className="info">Selected Account: {selectedAccount}</p>
-          <p className="info">ETH Balance: {balance} ETH</p>
-          <select
-            className="account-select"
-            value={selectedAccount}
-            onChange={handleAccountChange}
-          >
-            {accounts.map((account) => (
-              <option key={account} value={account}>
-                {account}
-              </option>
-            ))}
-          </select>
+    <div>
+      <button className="connect-wallet-button" onClick={connectWallet}>
+        连接钱包
+      </button>
+      {connected && (
+        <div className="wallet-info">
+          <p>已连接钱包</p>
+          <p>钱包地址: {walletAddress}</p>
+          <p>余额: {balance} ETH</p>
         </div>
-      ) : (
-        <button className="connect-btn" onClick={connectToMetaMask}>
-          Connect Wallet
-        </button>
       )}
     </div>
   );
-}
+};
 
-export default App;
+
+
+export default ConnectWalletButton;
