@@ -9,12 +9,7 @@ async function main() {
   //部署USDT合约
   const TetherToken = await ethers.getContractFactory("TetherToken");
 
-  const tetherToken = await TetherToken.deploy(
-    10000,
-    "Tether",
-    "USDT",
-    18
-  );
+  const tetherToken = await TetherToken.deploy(deployer.address);
 
   await tetherToken.waitForDeployment();
 
@@ -43,29 +38,30 @@ async function main() {
   console.log("VeToken 合约已成功部署，地址：", veToken.target);
   console.log("WETH 合约已成功部署，地址：", weth.target)
 
-  // //部署 Stake- crv-weth 合约
-  // const Stake1 = await ethers.getContractFactory("StakingContract");
-  // const stake1 = await Stake1.deploy(
-  //   weth.target,
-  //   crvToken.target
-  // );
-  // //等待stake合约部署完成
-  // await stake1.waitForDeployment();
+  //部署 Stake- crv-weth 合约
+  const Stake1 = await ethers.getContractFactory("StakingContract");
+  const stake1 = await Stake1.deploy(
+    crvToken.target,
+    "5"
+  );
+  //等待stake合约部署完成
+  await stake1.waitForDeployment();
 
-  // //stake合约地址
-  // console.log("Stake-- crv-weth 合约已成功部署，地址：", stake1.target);
+  //stake合约地址
+  console.log("Stake-- crv-weth 合约已成功部署，地址：", stake1.target);
 
-  // //部署USDT-CRV Stake合约
-  // const Stake2 = await ethers.getContractFactory("StakingContract");
-  // const stake2 = await Stake2.deploy(
-  //   tetherToken.target,
-  //   crvToken.target
-  // );
-  // //等待stake合约部署完成
-  // await stake2.waitForDeployment();
+  //部署USDT-CRV Stake合约
+  const Stake2 = await ethers.getContractFactory("USDTStakingContract");
+  const stake2 = await Stake2.deploy(
+    tetherToken.target,
+    crvToken.target,
+    "5"
+  );
+  //等待stake合约部署完成
+  await stake2.waitForDeployment();
 
-  // //stake合约地址
-  // console.log("Stake-- crv-weth 合约已成功部署，地址：", stake2.target);
+  //stake合约地址
+  console.log("Stake-- crv-USDT 合约已成功部署，地址：", stake2.target);
 
 
   // //部署UniswapV2Factory合约

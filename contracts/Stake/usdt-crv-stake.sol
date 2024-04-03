@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract StakingContract {
+contract USDTStakingContract {
     IERC20 public usdtToken;
     IERC20 public crvToken;
     uint256 public exchangeRate;
