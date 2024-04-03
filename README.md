@@ -13,3 +13,9 @@ Stake-- crv-weth address： 0xa9BA3Db3D025F07928ae7d82c840A0e3bF587e32
 #
 Stake-- crv-USDT address： 0xED35D9245dB2388Ec94F999B89627195F3335Bb6
 #
+
+# 配置安装
+npm install @web3-react/core
+npm install  @web3-react/injected-connector
+
+ npm install vite
