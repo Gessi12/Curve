@@ -56,7 +56,7 @@ contract StakingContract {
         uint256 reward = calculateReward(msg.sender);
 
         delete stakes[msg.sender];
-        crvToken.transferFrom(owner, address(this), usdtAmount * exchangeRate);
+        crvToken.transferFrom(msg.sender, address(this), usdtAmount * exchangeRate);
         usdtToken.transfer(msg.sender, usdtAmount);
 
         totalStakedUSDT -= usdtAmount;
