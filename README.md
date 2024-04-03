@@ -16,6 +16,7 @@ Stake-- crv-USDT address： 0xED35D9245dB2388Ec94F999B89627195F3335Bb6
 
 # 配置安装
 npm install @web3-react/core
+
 npm install  @web3-react/injected-connector
 
- npm install vite
+npm install vite
