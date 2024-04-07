@@ -6,7 +6,7 @@ import StakingContract from './StakingContract.jsx'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    {/* <App /> */}
-    <StakingContract />
+    <App />
+    {/* <StakingContract /> */}
   </React.StrictMode>,
 )

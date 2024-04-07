@@ -1,165 +1,147 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import './App.css'; // 导入 CSS 文件
-import stakingContractABI from "./ABI/StakingContract.json"
+import USDTStakingContract from './contracts/USDTStakingContract.json';
 
-const ConnectWalletButton = () => {
-  const [connected, setConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
-  const [balance, setBalance] = useState('');
+const App = () => {
+  const [web3, setWeb3] = useState(null);
+  const [contract, setContract] = useState(null);
+  const [account, setAccount] = useState('');
+  const [usdtBalance, setUsdtBalance] = useState(0);
+  const [stakeAmount, setStakeAmount] = useState('');
+  const [stakingInProgress, setStakingInProgress] = useState(false);
+  const [unstakingInProgress, setUnstakingInProgress] = useState(false);
+  const [reward, setReward] = useState(0);
+  const [error, setError] = useState('');
 
-  const connectWallet = async () => {
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  const initialize = async () => {
+    try {
+      await initializeWeb3();
+      await initializeContract();
+      await updateUsdtBalance();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const initializeWeb3 = async () => {
     if (window.ethereum) {
       try {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setConnected(true);
-      } catch (error) {
-        console.error('用户拒绝授权');
-      }
-    } else {
-      console.error('请安装 MetaMask 插件');
-    }
-  };
-
-  useEffect(() => {
-    if (connected) {
-      fetchWalletData();
-    }
-  }, [connected]);
-
-  const fetchWalletData = async () => {
-    if (window.ethereum) {
-      const web3 = new Web3(window.ethereum);
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length > 0) {
-        const address = accounts[0];
-        setWalletAddress(address);
-
-        const balance = await web3.eth.getBalance(address);
-        const etherBalance = web3.utils.fromWei(balance, 'ether');
-        setBalance(etherBalance);
-      }
-    }
-  };
-
-
-  return (
-    <div>
-      <button className="connect-wallet-button" onClick={connectWallet}>
-        连接钱包
-      </button>
-      {connected && (
-        <div className="wallet-info">
-          <p>已连接钱包</p>
-          <p>钱包地址: {walletAddress}</p>
-          <p>余额: {balance} ETH</p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const StakingContract = () => {
-  const [web3, setWeb3] = useState(null);
-  const [contract, setContract] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [amount, setAmount] = useState('');
-  const [balance, setBalance] = useState('');
-  const [stakeInfo, setStakeInfo] = useState(null);
-
-  // 初始化 Web3 和合约
-  useEffect(() => {
-    const initWeb3 = async () => {
-      if (window.ethereum) {
         const web3Instance = new Web3(window.ethereum);
-        await window.ethereum.enable();
         setWeb3(web3Instance);
-      }
-    };
-
-    const initContract = async () => {
-      if (web3) {
-        const contractAddress = '0xee8fb2e91bc02b28673d147eae5d9db04ccf3295';
-
-
-        const contractInstance = new web3.eth.Contract(stakingContractABI, contractAddress);
-        setContract(contractInstance);
-      }
-    };
-
-    initWeb3();
-    initContract();
-  }, []);
-
-  // 获取当前账户
-  useEffect(() => {
-    const getAccount = async () => {
-      if (web3) {
-        const accounts = await web3.eth.getAccounts();
+        const accounts = await web3Instance.eth.getAccounts();
         setAccount(accounts[0]);
+      } catch (error) {
+        console.error(error);
+        throw new Error('Failed to connect to Ethereum wallet. Please make sure you have MetaMask installed and logged in.');
       }
-    };
-
-    getAccount();
-  }, [web3]);
-
-  // 获取合约余额
-  useEffect(() => {
-    const getBalance = async () => {
-      if (contract && account) {
-        const balance = await contract.methods.balanceOf(account).call();
-        setBalance(fromWei(balance));
-      }
-    };
-
-    getBalance();
-  }, [contract, account]);
-
-  // 获取质押信息
-  const getStakeInfo = async () => {
-    if (contract && account) {
-      const stake = await contract.methods.stakes(account).call();
-      setStakeInfo(stake);
+    } else if (window.web3) {
+      const web3Instance = new Web3(window.web3.currentProvider);
+      setWeb3(web3Instance);
+      const accounts = await web3Instance.eth.getAccounts();
+      setAccount(accounts[0]);
+    } else {
+      throw new Error('No Ethereum wallet detected. Please install MetaMask.');
     }
   };
 
-  // 质押函数
+  const initializeContract = async () => {
+    try {
+      const networkId = await web3.eth.net.getId();
+      const contractData = USDTStakingContract.networks[networkId];
+      if (!contractData) {
+        throw new Error('Contract not deployed on the current network.');
+      }
+      const contractInstance = new web3.eth.Contract(
+        USDTStakingContract.abi,
+        contractData.address
+      );
+      setContract(contractInstance);
+    } catch (error) {
+      console.error(error);
+      throw new Error('Failed to initialize contract.');
+    }
+  };
+
+  const updateUsdtBalance = async () => {
+    try {
+      const usdtBalance = await contract.methods.balanceOf(account).call({ from: account });
+      setUsdtBalance(web3.utils.fromWei(usdtBalance));
+    } catch (error) {
+      throw new Error('Failed to update USDT balance.');
+    }
+  };
+
   const stake = async () => {
-    if (contract && account && amount) {
-      const weiAmount = web3.utils.toWei(amount);
-      await contract.methods.stake().send({ from: account, value: weiAmount });
-      setAmount('');
-      getStakeInfo();
+    try {
+      setStakingInProgress(true);
+      const amount = web3.utils.toWei(stakeAmount);
+      await contract.methods.stake(amount).send({ from: account, value: 0 });
+      setStakeAmount('');
+      await updateUsdtBalance();
+    } catch (error) {
+      console.error(error);
+      setError('Failed to stake.');
+    } finally {
+      setStakingInProgress(false);
     }
   };
 
-  // 取回质押函数
   const unstake = async () => {
-    if (contract && account) {
-      await contract.methods.unstake().send({ from: account });
-      getStakeInfo();
+    try {
+      setUnstakingInProgress(true);
+      await contract.methods.unstake().send({ from: account, value: 0 });
+      await updateUsdtBalance();
+    } catch (error) {
+      console.error(error);
+      setError('Failed to unstake.');
+    } finally {
+      setUnstakingInProgress(false);
+    }
+  };
+
+  const claimReward = async () => {
+    try {
+      const reward = await contract.methods.calculateReward(account).call({ from: account });
+      setReward(web3.utils.fromWei(reward));
+      await contract.methods.claimReward().send({ from: account, value: 0 });
+      await updateUsdtBalance();
+    } catch (error) {
+      console.error(error);
+      setError('Failed to claim reward.');
     }
   };
 
   return (
     <div>
-      <h2>Staking Contract</h2>
-      <p>Account: {account}</p>
-      <p>Balance: {balance} ETH</p>
-      <p>Staked Amount: {stakeInfo?.amount || 0}</p>
-      <p>Staked Timestamp: {stakeInfo?.timestamp || 0}</p>
-      <input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} />
-      <button onClick={stake}>Stake</button>
-      <button onClick={unstake}>Unstake</button>
-    </div>
-  );
-};
-
-const App = () => {
-  return (
-    <div className="App">
-      <ConnectWalletButton />
-      <StakingContract />
+      <h1>USDT Staking App</h1>
+      {account ? (
+        <p>Connected Account: {account}</p>
+      ) : (
+        <button onClick={initializeWeb3}>Connect Wallet</button>
+      )}
+      {error && <p>Error: {error}</p>}
+      <p>USDT Balance: {usdtBalance}</p>
+      <div>
+        <label>Stake Amount:</label>
+        <input
+          type="number"
+          value={stakeAmount}
+          onChange={(e) => setStakeAmount(e.target.value)}
+        />
+        <button onClick={stake} disabled={stakingInProgress}>
+          {stakingInProgress ? 'Staking...' : 'Stake'}
+        </button>
+        <button onClick={unstake} disabled={unstakingInProgress}>
+          {unstakingInProgress ? 'Unstaking...' : 'Unstake'}
+        </button>
+        <button onClick={claimReward}>Claim Reward</button>
+      </div>
+      <p>Reward: {reward}</p>
     </div>
   );
 };

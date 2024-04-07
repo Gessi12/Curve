@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
-import StakingContractABI from './ABI/StakingContract.json';
+import StakingContractABI from './contracts/StakingContract.json';
 import deploymentInfo from './deployment.json';
 
 const App = () => {
