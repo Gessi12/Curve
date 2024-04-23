@@ -13,7 +13,7 @@ Stake-- crv-weth address： 0xd90540627Cce68A85b054a705cD83a7967260Db8
 #
 Stake-- crv-USDT address： 0xd9573ed0dd4919d1f7c0953c0672480e3bd66eae
 #
-Swap address : 0x10567dD0FA49EFFA3663b0c4BF0483F5eee95800
+Swap address : 0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74
 
 # 配置安装
 npm install @web3-react/core
