@@ -47,6 +47,8 @@ contract CrvVePair  {
     IERC20 public veToken;
 
     uint256 public totalSupply;
+    // Define a mapping for the whitelist
+    mapping(address => bool) public whitelist;
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
     uint256 private reserve0;           // uses single storage slot, accessible via getReserves
@@ -56,7 +58,7 @@ contract CrvVePair  {
     uint public price0CumulativeLast;
     uint public price1CumulativeLast;
     uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
-
+    address public owner;
 
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
@@ -64,10 +66,40 @@ contract CrvVePair  {
     event RemoveLiquidity(address indexed provider, uint256 amountCrv, uint256 amountVe, uint256 liquidity);
     event Swap(address indexed user, uint256 amountIn, uint256 amountOut);
     event Sync(uint256 reserve0, uint256 reserve1);
+    event AddToWhitelist(address indexed account);
+    event RemoveWhitelist(address indexed account);
 
     constructor(address _crvToken, address _veToken) {
         crvToken = IERC20(_crvToken);
         veToken = IERC20(_veToken);
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(owner == address(msg.sender),"Address must owner");
+        _;
+    }
+
+    modifier onlyWhitelisted() {
+        require(whitelist[msg.sender], "Address is not whitelisted");
+        _;
+    }
+
+    function setOwner(address _address) external onlyOwner {
+        owner = _address;
+    } 
+
+    // Function to add an address to the whitelist
+    function addToWhitelist(address _address) external onlyOwner {
+        require(_address != address(0), "Zero address cannot be whitelisted");
+        whitelist[_address] = true;
+        emit AddToWhitelist(_address);
+    }
+
+    function removeToWhitelist(address _address) external onlyOwner {
+        require(_address != address(0), "Zero address cannot be whitelisted");
+        whitelist[_address] = false;
+        emit AddToWhitelist(_address);
     }
 
     function getReserves() public view returns (uint256 _reserve0, uint256 _reserve1, uint32 _blockTimestampLast) {
@@ -161,7 +193,7 @@ contract CrvVePair  {
         emit RemoveLiquidity(msg.sender, amountCrv, amountVe, liquidity);
     }
 
-    function swapVEToken(uint256 CrvAmount, address to) external {
+    function swapVEToken(uint256 CrvAmount, address to) external onlyWhitelisted{
         // Simplified swap function, actual implementation depends on the exchange mechanism
         // Swap CRV for VE or vice versa, based on the amountIn
         // Update balances and emit event
