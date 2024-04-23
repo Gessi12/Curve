@@ -61,7 +61,7 @@
         error: '',
         addressToCheck: '',
         balance: null,
-        contractAddress: '0xe0cD140AEeecB71a65A02d081Cf93442c49995FF',
+        contractAddress: '0xe0cd140aeeecb71a65a02d081cf93442c49995ff',
         contractABI: CrvAbi.abi
       };
     },

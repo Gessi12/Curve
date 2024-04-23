@@ -24,6 +24,9 @@
             <li class="nav-item">
               <router-link to="/crv" class="nav-link">CRV通证</router-link>
             </li>
+            <li class="nav-item">
+              <router-link to="/swap" class="nav-link">获取VE通证</router-link>
+            </li>
           </ul>
         </div>
       </div>

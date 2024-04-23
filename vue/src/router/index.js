@@ -6,6 +6,7 @@ import Crv from "../Crv.vue"
 import Ve from "../Ve.vue";
 import USDT from "../Usdt.vue";
 import Main from "../Main.vue";
+import Swap from "../Swap.vue";
 
 const routes = [
   { path: '/weth', component: WETH },
@@ -13,6 +14,7 @@ const routes = [
   { path: '/ve', component: Ve },
   { path: '/Usdt', component: USDT },
   { path: '/crv', component: Crv },
+  { path: '/swap', component: Swap },
   {path: "/", component:Main}
 ];
 

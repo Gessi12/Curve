@@ -1,18 +1,19 @@
 # Curve
 Graduation Design Based on Curve Dao
 
-USDT address： 0xc4940eD8008B8fd744ddE18B76F96e07c9116d4c
+USDT address： 0xc8a4e20165e553247b310c3e9611995937d5adac
 #
-CrvToken address： 0x7648d67987E608ea089675263fc77fc6cb18EaCe
+CrvToken address： 0xe0cd140aeeecb71a65a02d081cf93442c49995ff
 #
-VeToken address： 0xD5390D7b01d6882Bd9299B96b4224Fc5af5b6c80
+VeToken address： 0xf96b197dde68408a3b10af8cc296b7ffbc0e1809
 #
 WETH address： 0x9797e40698cC9491d6a5443743C4788603EE45D7
 #
-Stake-- crv-weth address： 0xa9BA3Db3D025F07928ae7d82c840A0e3bF587e32
+Stake-- crv-weth address： 0xd90540627Cce68A85b054a705cD83a7967260Db8
 #
-Stake-- crv-USDT address： 0xED35D9245dB2388Ec94F999B89627195F3335Bb6
+Stake-- crv-USDT address： 0xd9573ed0dd4919d1f7c0953c0672480e3bd66eae
 #
+Swap address : 0x10567dD0FA49EFFA3663b0c4BF0483F5eee95800
 
 # 配置安装
 npm install @web3-react/core

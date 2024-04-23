@@ -77,10 +77,9 @@ contract CrvVePair  {
     }
 
         // update reserves and, on the first call per block, price accumulators
-    function _update(uint balance0, uint balance1, uint256 _reserve0, uint256 _reserve1) private {
+    function _update(uint balance0, uint balance1) private {
        
         uint32 blockTimestamp = uint32(block.timestamp % 2**32);
-        uint32 timeElapsed = blockTimestamp - blockTimestampLast; // overflow is desired
 
         reserve0 = uint256(balance0);
         reserve1 = uint256(balance1);
@@ -118,8 +117,6 @@ contract CrvVePair  {
     }
 
     function addLiquidity(uint256 amountCrv, uint256 amountVe) external {
-
-        (uint256 _reserve0, uint256 _reserve1,) = getReserves();
         IERC20(crvToken).transferFrom(msg.sender, address(this), amountCrv);
         IERC20(veToken).transferFrom(msg.sender, address(this), amountVe);
         
@@ -134,7 +131,7 @@ contract CrvVePair  {
         balance1 = IERC20(veToken).balanceOf(address(this));
 
 
-        _update(balance0, balance1, _reserve0, _reserve1);
+        _update(balance0, balance1);
         
         emit AddLiquidity(msg.sender, amountCrv, amountVe, liquidity);
     }
@@ -145,6 +142,7 @@ contract CrvVePair  {
         uint256 amountCrv = liquidity * crvToken.balanceOf(address(this)) / totalSupply;
         uint256 amountVe = liquidity * veToken.balanceOf(address(this)) / totalSupply;
         require(amountCrv > 0 && amountVe > 0, "Insufficient liquidity");
+        require(amountCrv < _reserve0 && amountVe < _reserve1);
 
         totalSupply -= liquidity;
         balanceOf[msg.sender] -= liquidity;
@@ -158,7 +156,7 @@ contract CrvVePair  {
         balance0 = IERC20(crvToken).balanceOf(address(this));
         balance1 = IERC20(veToken).balanceOf(address(this));
 
-        _update(balance0, balance1, _reserve0, _reserve1);
+        _update(balance0, balance1);
 
         emit RemoveLiquidity(msg.sender, amountCrv, amountVe, liquidity);
     }
@@ -181,7 +179,7 @@ contract CrvVePair  {
         balance1 = IERC20(veToken).balanceOf(address(this));
 
 
-        _update(balance0, balance1, _reserve0, _reserve1);
+        _update(balance0, balance1);
 
         emit Swap(msg.sender, CrvAmount, VeAmount);
     }
@@ -204,12 +202,12 @@ contract CrvVePair  {
         balance1 = IERC20(veToken).balanceOf(address(this));
 
 
-        _update(balance0, balance1, _reserve0, _reserve1);
+        _update(balance0, balance1);
 
         emit Swap(msg.sender, CrvAmount, VeAmount);
     }
     
     function sync() external  {
-        _update(IERC20(crvToken).balanceOf(address(this)), IERC20(veToken).balanceOf(address(this)), reserve0, reserve1);
+        _update(IERC20(crvToken).balanceOf(address(this)), IERC20(veToken).balanceOf(address(this)));
     }
 }
