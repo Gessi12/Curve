@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <h1>CRV Token</h1>
+      <h1>CRV 通证</h1>
       <div class="form-group">
         <label for="spender">Spender Address:</label>
         <input class="form-control" type="text" v-model="spender">
