@@ -49,7 +49,7 @@ export default {
       const fromAddress = accounts[0]; // 获取当前 MetaMask 账户的地址
 
       // 创建合约实例
-      const contractAddress = '0x10567dD0FA49EFFA3663b0c4BF0483F5eee95800'; // Sepolia 合约地址
+      const contractAddress = '0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74'; // Sepolia 合约地址
       const contractABI = SwapABI.abi;
       const SwapContract = new web3.eth.Contract(contractABI, contractAddress);
 
@@ -84,7 +84,7 @@ async swapBack() {
       const fromAddress = accounts[0]; // 获取当前 MetaMask 账户的地址
 
       // 创建合约实例
-      const contractAddress = '0x10567dD0FA49EFFA3663b0c4BF0483F5eee95800'; // Sepolia 合约地址
+      const contractAddress = '0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74'; // Sepolia 合约地址
       const contractABI = SwapABI.abi;
       const SwapContract = new web3.eth.Contract(contractABI, contractAddress);
 
