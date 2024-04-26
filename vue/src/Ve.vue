@@ -61,7 +61,7 @@
         error: '',
         addressToCheck: '',
         balance: null,
-        contractAddress: '0xf96B197dde68408A3B10AF8Cc296b7ffbc0E1809',
+        contractAddress: '0x05ca7918F8bA421D1EcF452674CdFE1c16a8b29a',
         contractABI: VeAbi.abi
       };
     },

@@ -44,7 +44,7 @@
             const accounts = await web3.eth.getAccounts();
             const fromAddress = accounts[0];
   
-            const contractAddress = '0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74'; // CrvVePair 合约地址
+            const contractAddress = '0xdE394be675EfF774727E281810e76832A936C77F'; // CrvVePair 合约地址
             const contractABI = CrvVePairABI.abi;
             const contract = new web3.eth.Contract(contractABI, contractAddress);
   
@@ -69,7 +69,7 @@
             const accounts = await web3.eth.getAccounts();
             const fromAddress = accounts[0];
   
-            const contractAddress = '0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74'; // CrvVePair 合约地址
+            const contractAddress = '0xdE394be675EfF774727E281810e76832A936C77F'; // CrvVePair 合约地址
             const contractABI = CrvVePairABI.abi;
             const contract = new web3.eth.Contract(contractABI, contractAddress);
   
@@ -93,7 +93,7 @@
             const accounts = await web3.eth.getAccounts();
             const fromAddress = accounts[0];
 
-            const contractAddress = '0xc090d02899bef2F0e78a595215fb3AcaAA5cFb74'; // CrvVePair 合约地址
+            const contractAddress = '0xdE394be675EfF774727E281810e76832A936C77F'; // CrvVePair 合约地址
             const contractABI = CrvVePairABI.abi;
             const contract = new web3.eth.Contract(contractABI, contractAddress);
 

@@ -63,6 +63,11 @@ contract StakingContract {
         emit RewardClaimed(msg.sender, reward);
     }
 
+    function getStakeAmount(address account) external view returns (uint256) {
+        return stakes[account].amount;
+    }
+
+
     function calculateReward(address account) public view returns (uint256) {
         Stake storage stakeInfo = stakes[account];
         require(stakeInfo.amount > 0, "No staked ETH.");

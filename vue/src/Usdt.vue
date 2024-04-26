@@ -48,7 +48,7 @@
   
   <script>
   import Web3 from 'web3';
-  import USDTAbi from './contracts/USDTStakingContract.json';
+  import USDTAbi from './contracts/Tether.json';
   
   export default {
     data() {
@@ -61,7 +61,7 @@
         error: '',
         addressToCheck: '',
         balance: null,
-        contractAddress: '0xC8A4E20165e553247B310c3e9611995937D5adaC',
+        contractAddress: '0x1747435e81A2A0cdEbF2aCBcb23599Bfc5fa6BC2',
         contractABI: USDTAbi.abi
       };
     },

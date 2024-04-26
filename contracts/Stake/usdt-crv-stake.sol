@@ -90,6 +90,10 @@ contract USDTStakingContract {
         rewardRate = rate;
     }
 
+    function getStakeAmount(address account) external view returns (uint256) {
+        return stakes[account].usdtAmount;
+    }
+
     function setOwner(address _owner) external onlyOwner {
         owner = _owner;
     }

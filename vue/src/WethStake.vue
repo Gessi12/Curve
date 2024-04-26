@@ -30,13 +30,20 @@
         <input type="number" placeholder="Unstake Amount" v-model="unstakeAmount" class="input-field" />
         <button @click="handleUnstake" class="action-button">Unstake</button>
       </div>
+
+      <div class="section">
+        <h2>Get Stake Amount</h2>
+        <button @click="getStakeAmount" class="action-button">Get Stake Amount</button>
+        <p v-if="stakeAmount !== ''" class="reward-info">Stake Amount: {{ stakeAmount }}</p>
+      </div>
+
     </div>
   </template>
   
   <script>
   import Web3 from 'web3';
   import StakingContractABI from './contracts/StakingContract.json';
-  import deploymentInfo from './deployment.json';
+  import deploymentInfo from './contracts/WethStakeDeployment.json';
   
   export default {
     data() {
@@ -134,6 +141,15 @@
           console.error('Failed to unstake:', error);
         }
       },
+      async getStakeAmount() {
+        try {
+          const stakeAmount = await this.contract.methods.getStakeAmount(this.account).call();
+          this.stakeAmount = stakeAmount;
+        } catch (error) {
+          console.error('Failed to get stake amount:', error);
+        }
+      },
+
       async calculateReward() {
         try {
           const reward = await this.contract.methods.calculateReward(this.account).call();
